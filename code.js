@@ -27,10 +27,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     class Enemy {
         constructor() {
-            this.x = Math.random() * window.innerWidth
+            this.x = Math.round(Math.random() * window.innerWidth)
             this.y = -20; // Početak izvan ekrana
-            this.width = 20;
-            this.height = 20;
+            this.width = 30;
+            this.height = 30;
             this.color = 'grey';
             this.velocity = {
                 x: (Math.random() - 0.5) * 4,
@@ -42,9 +42,22 @@ document.addEventListener("DOMContentLoaded", () => {
             mainContext.fillStyle = this.color;
             mainContext.fillRect(this.x, this.y, this.width, this.height);
         }
+
+        clear() {
+            mainContext.clearRect(this.x, this.y, this.width, this.height);
+        }
     }
     const player = new Player();
     player.draw()
+
+    const enemy = new Enemy();
+    setInterval(newEnemy, 1000);
+
+    function newEnemy() { 
+        enemy.clear()
+        enemy.y += 7
+        enemy.draw()
+    }
 
     window.addEventListener('keydown', (e) => {
         player.clear()
