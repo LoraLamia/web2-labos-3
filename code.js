@@ -26,16 +26,23 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     class Enemy {
-        constructor() {
-            this.x = Math.round(Math.random() * window.innerWidth)
-            this.y = -20; // Početak izvan ekrana
+        constructor(direction) {
+            if(direction === "top") {
+                this.x = Math.round(Math.random() * window.innerWidth)
+                this.y = -20; // Početak izvan ekrana
+            } else if(direction === "left") {
+                this.x = -20
+                this.y = Math.round(Math.random() * window.innerHeight)
+            } else if(direction === "right") {
+                this.x = window.innerWidth + 20
+                this.y = Math.round(Math.random() * window.innerHeight)
+            } else {
+                this.x = Math.round(Math.random() * window.innerWidth)
+                this.y = window.innerHeight + 20
+            }
             this.width = 30;
             this.height = 30;
             this.color = 'grey';
-            this.velocity = {
-                x: (Math.random() - 0.5) * 4,
-                y: Math.random() * 3 + 1
-            };
         }
 
         draw() {
@@ -50,13 +57,71 @@ document.addEventListener("DOMContentLoaded", () => {
     const player = new Player();
     player.draw()
 
-    const enemy = new Enemy();
-    setInterval(newEnemy, 1000);
+    const enemies = []
+    setInterval(generateEnemies, 8000);
 
-    function newEnemy() { 
-        enemy.clear()
-        enemy.y += 7
-        enemy.draw()
+    function generateEnemies() {
+        const enemyTop = new Enemy('top');
+        const enemyLeft = new Enemy('left');
+        const enemyRight = new Enemy('right');
+        const enemyDown = new Enemy('down');
+        enemies.push(enemyTop)
+        enemies.push(enemyLeft)
+        enemies.push(enemyRight)
+        enemies.push(enemyDown)
+
+        var topInterval = setInterval(newEnemyFromTop, 100);
+        var leftInterval = setInterval(newEnemyFromLeft, 100);
+        var rightInterval = setInterval(newEnemyFromRight, 100);
+        var downInterval = setInterval(newEnemyFromDown, 100);
+     
+        function newEnemyFromTop() { 
+            if(enemyTop.y > window.innerHeight) {
+                clearInterval(topInterval)
+                enemies.pop(enemyTop)
+                enemyTop.clear()
+            } else {
+                enemyTop.clear()
+                enemyTop.y += 7
+                enemyTop.draw()
+            }
+        }
+
+        function newEnemyFromLeft() {
+            if(enemyLeft.x > window.innerWidth) {
+                clearInterval(leftInterval)
+                enemies.pop(enemyLeft)
+                enemyLeft.clear()
+            } else {
+                enemyLeft.clear()
+                enemyLeft.x += 7
+                enemyLeft.draw()
+            }
+        }
+
+        function newEnemyFromRight() { 
+            if(enemyRight.x < 0) {
+                clearInterval(rightInterval)
+                enemies.pop(enemyRight)
+                enemyRight.clear()
+            } else {
+                enemyRight.clear()
+                enemyRight.x -= 7
+                enemyRight.draw()
+            }
+        }
+
+        function newEnemyFromDown() {
+            if(enemyDown.y < 0) {
+                clearInterval(downInterval)
+                enemies.pop(enemyDown)
+                enemyDown.clear()
+            } else {
+                enemyDown.clear()
+                enemyDown.y -= 7
+                enemyDown.draw()
+            }
+        }
     }
 
     window.addEventListener('keydown', (e) => {
