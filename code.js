@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         //za crtanje player-a
         draw() {
-            mainContext.shadowBlur = 10
+            mainContext.shadowBlur = 2
             mainContext.shadowColor = "white"
             mainContext.fillStyle = this.color
             mainContext.fillRect(this.x, this.y, this.width, this.height)
@@ -47,9 +47,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 this.x = Math.round(Math.random() * window.innerWidth)
                 this.y = window.innerHeight + 20
             }
-            this.width = 30
-            this.height = 30
-            this.color = 'grey'
+            let size = Math.floor(Math.random() * 31) + 20
+            this.width = size
+            this.height = size
+            const grayValue = Math.floor(Math.random() * 256)
+            this.color = `rgb(${grayValue}, ${grayValue}, ${grayValue})`
+            this.velocity = Math.floor(Math.random() * 13) + 5
         }
         //za crtanje enemy-a
         draw() {
@@ -81,6 +84,11 @@ document.addEventListener("DOMContentLoaded", () => {
     //svakih 50 milisekundi pozovi f-ju checkTimePassed koja racuna koliko je vremena proslo, brise stari text i upisuje drugi (azurira vrijeme)
     setInterval(checkTimePassed, 10)
     setInterval(updateBestTime, 10)
+    setInterval(drawPlayer, 1)
+
+    function drawPlayer() {
+        player.draw()
+    }
 
     function checkTimePassed() {
         let timeNow = new Date()
@@ -166,7 +174,7 @@ document.addEventListener("DOMContentLoaded", () => {
             } else {
                 //obrisemo stari rect i crtamo novi 7px udaljen (kretanje enemy-a)
                 enemyTop.clear()
-                enemyTop.y += 7
+                enemyTop.y += enemyTop.velocity
                 enemyTop.draw()
             }
         }
@@ -181,7 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 enemyLeft.clear()
             } else {
                 enemyLeft.clear()
-                enemyLeft.x += 7
+                enemyLeft.x += enemyLeft.velocity
                 enemyLeft.draw()
             }
         }
@@ -196,7 +204,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 enemyRight.clear()
             } else {
                 enemyRight.clear()
-                enemyRight.x -= 7
+                enemyRight.x -= enemyRight.velocity
                 enemyRight.draw()
             }
         }
@@ -211,7 +219,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 enemyDown.clear()
             } else {
                 enemyDown.clear()
-                enemyDown.y -= 7
+                enemyDown.y -= enemyDown.velocity
                 enemyDown.draw()
             }
         }
