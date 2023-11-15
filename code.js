@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+    //dohvacanje glavnog canvasa
     var mainCanvas = document.getElementById("game");
     var mainContext = mainCanvas.getContext("2d");
 
@@ -13,12 +14,12 @@ document.addEventListener("DOMContentLoaded", () => {
             this.height = 30
             this.color = "red"
         }
-
+        //za crtanje player-a
         draw() {
             mainContext.fillStyle = this.color
             mainContext.fillRect(this.x, this.y, this.width, this.height)
         }
-
+        //za brisanje player-a
         clear() {
             mainContext.clearRect(this.x, this.y, this.width, this.height);
         }
@@ -27,9 +28,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     class Enemy {
         constructor(direction) {
+            //ovisno o vrijednosti varijable direction, odreduje se odakle enemy krece (svakako uvijek krece izvan ekrana)
             if (direction === "top") {
                 this.x = Math.round(Math.random() * window.innerWidth)
-                this.y = -20; // Početak izvan ekrana
+                this.y = -20; 
             } else if (direction === "left") {
                 this.x = -20
                 this.y = Math.round(Math.random() * window.innerHeight)
@@ -44,45 +46,60 @@ document.addEventListener("DOMContentLoaded", () => {
             this.height = 30
             this.color = 'grey'
         }
-
+        //za crtanje enemy-a
         draw() {
             mainContext.fillStyle = this.color;
             mainContext.fillRect(this.x, this.y, this.width, this.height)
         }
-
+        //za brisanje enemy-a
         clear() {
             mainContext.clearRect(this.x, this.y, this.width, this.height)
         }
     }
+    //odmah na pocetku nacrtaj playera
     const player = new Player()
     player.draw()
 
+    //enemy-je koji su prisutni na ekranu spremamo u enemies
     const enemies = []
+    //svake 4 sekunde generiraj nove enemy-je
     setInterval(generateEnemies, 4000)
-
+    //svakih 100 milisekundi provjeri da li se player dotaknuo s nekim od enemy-a
     setInterval(checkForOverlapps, 100)
 
     let startTime = new Date()
+    //svakih 50 milisekundi pozovi f-ju checkTimePassed koja racuna koliko je vremena proslo, brise stari text i upisuje drugi (azurira vrijeme)
+    setInterval(checkTimePassed, 50)
 
-    setInterval(checkTimePassed, 1000)
     function checkTimePassed() {
         let timeNow = new Date()
         let timeElapsed = timeNow - startTime
 
-        var text = "Vrijeme: " + timeElapsed
+        let minutes = Math.floor(timeElapsed / 60000)
+        let seconds = Math.floor((timeElapsed % 60000) / 1000)
+        let milliseconds = timeElapsed % 1000 
+
+        let formattedMinutes = minutes.toString().padStart(2, '0')
+        let formattedSeconds = seconds.toString().padStart(2, '0')
+        let formattedMilliseconds = milliseconds.toString().padStart(3, '0')
+
+        var text = `Vrijeme: ${formattedMinutes}:${formattedSeconds}:${formattedMilliseconds}`
         var textWidth = mainContext.measureText(text).width
     
         mainContext.fillStyle = "white"
-        mainContext.font = "bold 18px Arial"
+        mainContext.font = "bold 20px Arial"
 
-        mainContext.clearRect(50, 28, textWidth, 30)
-        mainContext.fillText(text, 50, 50)
-        
+        var xPosition = mainCanvas.width - textWidth - 10
+        var yPosition = 50
+
+        mainContext.clearRect(xPosition, yPosition - 30, textWidth + 10, 40)
+        mainContext.fillText(text, xPosition, yPosition)
     }
 
  
 
     function generateEnemies() {
+        //sa svakog ruba ekrana dolazi po 1 enemy
         const enemyTop = new Enemy('top')
         const enemyLeft = new Enemy('left')
         const enemyRight = new Enemy('right')
@@ -92,12 +109,14 @@ document.addEventListener("DOMContentLoaded", () => {
         enemies.push(enemyRight)
         enemies.push(enemyDown)
 
+        //svaki od enemy-a pomicemo svakih 100 milisekundi (kretanje enemy-a)
         var topInterval = setInterval(newEnemyFromTop, 100);
         var leftInterval = setInterval(newEnemyFromLeft, 100);
         var rightInterval = setInterval(newEnemyFromRight, 100);
         var downInterval = setInterval(newEnemyFromDown, 100);
 
         function newEnemyFromTop() {
+            //ako enemy izade iz ekrana zaustavljamo njegovo pomicanje i izbacujemo ga iz enemies
             if (enemyTop.y > window.innerHeight) {
                 clearInterval(topInterval)
                 let index = enemies.indexOf(enemyTop);
@@ -106,6 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
                 enemyTop.clear()
             } else {
+                //obrisemo stari rect i crtamo novi 7px udaljen (kretanje enemy-a)
                 enemyTop.clear()
                 enemyTop.y += 7
                 enemyTop.draw()
@@ -158,6 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
     
+    //funkcija koja provjere da li se 2 rect-a doticu (intersect)
     function areRectanglesOverlapping(rect1, rect2) {
         let minAx = rect1.x;
         let minAy = rect1.y;
@@ -178,6 +199,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
 
+    //funkcija koja poziva areRectanglesOverlapping za player-a i svakog enemy-a iz enemies
     function checkForOverlapps() {
         for (let enemy of enemies) {
             if (areRectanglesOverlapping(enemy, player)) {
@@ -186,13 +208,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-
-
-
+    //listener za pritiskivanje tipki, sluzi za pomicanje player-a koristeci strijelice na tipkovnici
     window.addEventListener('keydown', (e) => {
+        //obrisi player-a sa stare pozicije
         player.clear()
         switch (e.key) {
             case 'ArrowUp':
+                //ako player nije dosao do ruba pomici ga, a kad dode do ruba tijelo if-a se nece izvrsit pa ne moze proc rub
                 if (player.y > 0) {
                     player.y -= 10
                 }
@@ -213,6 +235,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
                 break;
         }
+        //nacrtaj player-a ponovo svaki put kad je pritisnuta neka tipka
         player.draw()
     })
 })
