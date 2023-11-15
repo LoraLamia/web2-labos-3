@@ -5,13 +5,6 @@ document.addEventListener("DOMContentLoaded", () => {
     mainCanvas.width = window.innerWidth;
     mainCanvas.height = window.innerHeight;
 
-    var text = "Text";
-    var textWidth = mainContext.measureText(text).width;
-
-    mainContext.fillStyle = "white";
-    mainContext.font = "bold 18px Arial";
-    mainContext.fillText(text, mainCanvas.width - textWidth - 50, 50);
-
     class Player {
         constructor() {
             this.x = Math.round(mainCanvas.width / 2)
@@ -68,6 +61,26 @@ document.addEventListener("DOMContentLoaded", () => {
     setInterval(generateEnemies, 4000)
 
     setInterval(checkForOverlapps, 100)
+
+    let startTime = new Date()
+
+    setInterval(checkTimePassed, 1000)
+    function checkTimePassed() {
+        let timeNow = new Date()
+        let timeElapsed = timeNow - startTime
+
+        var text = "Vrijeme: " + timeElapsed
+        var textWidth = mainContext.measureText(text).width
+    
+        mainContext.fillStyle = "white"
+        mainContext.font = "bold 18px Arial"
+
+        mainContext.clearRect(50, 28, textWidth, 30)
+        mainContext.fillText(text, 50, 50)
+        
+    }
+
+ 
 
     function generateEnemies() {
         const enemyTop = new Enemy('top')
@@ -172,6 +185,9 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
     }
+
+
+
 
     window.addEventListener('keydown', (e) => {
         player.clear()
