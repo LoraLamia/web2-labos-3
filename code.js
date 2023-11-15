@@ -81,9 +81,11 @@ document.addEventListener("DOMContentLoaded", () => {
     setInterval(checkForOverlapps, 100)
 
     let startTime = new Date()
-    //svakih 50 milisekundi pozovi f-ju checkTimePassed koja racuna koliko je vremena proslo, brise stari text i upisuje drugi (azurira vrijeme)
+    //svakih 10 milisekundi pozovi f-ju checkTimePassed koja racuna koliko je vremena proslo, brise stari text i upisuje drugi (azurira vrijeme)
     setInterval(checkTimePassed, 10)
+    //svakih 10 milisekundi pozovi updateBestTime 
     setInterval(updateBestTime, 10)
+    //svakih 1 milisekundu pozovi drawPlayer - ovo sam napravila zato da crveni rect ne nestaje iza sivih
     setInterval(drawPlayer, 1)
 
     function drawPlayer() {
@@ -116,7 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
         mainContext.clearRect(xPosition, yPosition - 30, textWidth + 10, 40)
         mainContext.fillText(text, xPosition, yPosition)
     }
-
+    //dohvaca trenutno najbolje vrijeme i prikazuje ga 
     function updateBestTime() {
         let timeElapsed = localStorage.getItem("bestTime")
         let minutes = Math.floor(timeElapsed / 60000)
