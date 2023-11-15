@@ -16,13 +16,18 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         //za crtanje player-a
         draw() {
+            mainContext.shadowBlur = 15
+            mainContext.shadowColor = "white"
             mainContext.fillStyle = this.color
             mainContext.fillRect(this.x, this.y, this.width, this.height)
         }
         //za brisanje player-a
         clear() {
-            mainContext.clearRect(this.x, this.y, this.width, this.height);
-        }
+            const shadowOffset = 20; // Additional area to clear, adjust as needed
+            mainContext.shadowBlur = 0;
+            mainContext.shadowColor = "transparent";
+            mainContext.clearRect(this.x - shadowOffset, this.y - shadowOffset, this.width + 2 * shadowOffset, this.height + 2 * shadowOffset);
+        }        
 
     }
 
@@ -48,12 +53,17 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         //za crtanje enemy-a
         draw() {
-            mainContext.fillStyle = this.color;
+            mainContext.shadowBlur = 15
+            mainContext.shadowColor = "white"
+            mainContext.fillStyle = this.color
             mainContext.fillRect(this.x, this.y, this.width, this.height)
         }
         //za brisanje enemy-a
         clear() {
-            mainContext.clearRect(this.x, this.y, this.width, this.height)
+            const shadowOffset = 20; // Additional area to clear, adjust as needed
+            mainContext.shadowBlur = 0;
+            mainContext.shadowColor = "transparent";
+            mainContext.clearRect(this.x - shadowOffset, this.y - shadowOffset, this.width + 2 * shadowOffset, this.height + 2 * shadowOffset);
         }
     }
     //odmah na pocetku nacrtaj playera
