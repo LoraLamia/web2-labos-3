@@ -16,14 +16,14 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         //za crtanje player-a
         draw() {
-            mainContext.shadowBlur = 15
+            mainContext.shadowBlur = 10
             mainContext.shadowColor = "white"
             mainContext.fillStyle = this.color
             mainContext.fillRect(this.x, this.y, this.width, this.height)
         }
         //za brisanje player-a
         clear() {
-            const shadowOffset = 20; // Additional area to clear, adjust as needed
+            const shadowOffset = 15; 
             mainContext.shadowBlur = 0;
             mainContext.shadowColor = "transparent";
             mainContext.clearRect(this.x - shadowOffset, this.y - shadowOffset, this.width + 2 * shadowOffset, this.height + 2 * shadowOffset);
@@ -53,14 +53,14 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         //za crtanje enemy-a
         draw() {
-            mainContext.shadowBlur = 15
+            mainContext.shadowBlur = 10
             mainContext.shadowColor = "white"
             mainContext.fillStyle = this.color
             mainContext.fillRect(this.x, this.y, this.width, this.height)
         }
         //za brisanje enemy-a
         clear() {
-            const shadowOffset = 20; // Additional area to clear, adjust as needed
+            const shadowOffset = 15; 
             mainContext.shadowBlur = 0;
             mainContext.shadowColor = "transparent";
             mainContext.clearRect(this.x - shadowOffset, this.y - shadowOffset, this.width + 2 * shadowOffset, this.height + 2 * shadowOffset);
@@ -79,7 +79,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let startTime = new Date()
     //svakih 50 milisekundi pozovi f-ju checkTimePassed koja racuna koliko je vremena proslo, brise stari text i upisuje drugi (azurira vrijeme)
-    setInterval(checkTimePassed, 50)
+    setInterval(checkTimePassed, 10)
+    setInterval(updateBestTime, 10)
 
     function checkTimePassed() {
         let timeNow = new Date()
@@ -102,8 +103,36 @@ document.addEventListener("DOMContentLoaded", () => {
         var xPosition = mainCanvas.width - textWidth - 10
         var yPosition = 50
 
+        mainContext.shadowBlur = 0;
+        mainContext.shadowColor = "transparent";
         mainContext.clearRect(xPosition, yPosition - 30, textWidth + 10, 40)
         mainContext.fillText(text, xPosition, yPosition)
+    }
+
+    function updateBestTime() {
+        let timeElapsed = localStorage.getItem("bestTime")
+        let minutes = Math.floor(timeElapsed / 60000)
+        let seconds = Math.floor((timeElapsed % 60000) / 1000)
+        let milliseconds = timeElapsed % 1000 
+
+        let formattedMinutes = minutes.toString().padStart(2, '0')
+        let formattedSeconds = seconds.toString().padStart(2, '0')
+        let formattedMilliseconds = milliseconds.toString().padStart(3, '0')
+
+        var text = `Najbolje vrijeme: ${formattedMinutes}:${formattedSeconds}:${formattedMilliseconds}`
+        var textWidth = mainContext.measureText(text).width
+
+        mainContext.fillStyle = "white"
+        mainContext.font = "bold 20px Arial"
+
+        var xPosition = mainCanvas.width - textWidth - 10 
+        var yPosition = 90
+
+        mainContext.shadowBlur = 0;
+        mainContext.shadowColor = "transparent";
+        mainContext.clearRect(xPosition, yPosition - 30, textWidth + 10, 40)
+        mainContext.fillText(text, xPosition, yPosition)
+        
     }
 
  
@@ -207,13 +236,20 @@ document.addEventListener("DOMContentLoaded", () => {
     
         return !(aLeftOfB || aRightOfB || aAboveB || aBelowB);
     }
-    
 
     //funkcija koja poziva areRectanglesOverlapping za player-a i svakog enemy-a iz enemies
     function checkForOverlapps() {
         for (let enemy of enemies) {
             if (areRectanglesOverlapping(enemy, player)) {
-                console.log("Colision detected")
+                let time = new Date()
+                let timePassed = time - startTime
+                let temp = localStorage.getItem("bestTime")
+                //ako je vrijeme bolje od trenutnog najboljeg postavi ga za najbolje
+                if(timePassed>temp) {
+                    localStorage.setItem("bestTime", timePassed)
+                }
+                //restartiraj timer
+                startTime = new Date()
             }
         }
     }
