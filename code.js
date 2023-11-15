@@ -5,10 +5,17 @@ document.addEventListener("DOMContentLoaded", () => {
     mainCanvas.width = window.innerWidth;
     mainCanvas.height = window.innerHeight;
 
+    var text = "Text";
+    var textWidth = mainContext.measureText(text).width;
+
+    mainContext.fillStyle = "white";
+    mainContext.font = "bold 18px Arial";
+    mainContext.fillText(text, mainCanvas.width - textWidth - 50, 50);
+
     class Player {
         constructor() {
-            this.x = mainCanvas.width / 2
-            this.y = mainCanvas.height / 2
+            this.x = Math.round(mainCanvas.width / 2)
+            this.y = Math.round(mainCanvas.height / 2)
             this.width = 30
             this.height = 30
             this.color = "red"
